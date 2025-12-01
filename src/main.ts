@@ -1,10 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
+
   // Validation Pipe 글로벌 설정
   app.useGlobalPipes(
     new ValidationPipe({
@@ -13,6 +15,28 @@ async function bootstrap() {
       transform: true, // 타입 자동 변환
     }),
   );
-  await app.listen(process.env.PORT ?? 3000);
+
+  // Swagger 설정
+  const config = new DocumentBuilder()
+    .setTitle('Meme Court API')
+    .setDescription('밈 재판소 백엔드 API 문서')
+    .setVersion('1.0')
+    .addTag('health', '서버 상태')
+    .addTag('users', '유저 관리')
+    .addTag('posts', '게시글 관리')
+    .addTag('hashtags', '해시태그 관리')
+    .addTag('votes', '투표 관리')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
+
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
+
+  console.log(`
+🚀 Server is running on: http://localhost:${port}
+📚 Swagger API Docs: http://localhost:${port}/api
+  `);
 }
 bootstrap();

@@ -1,19 +1,38 @@
 import { IsNotEmpty, IsString, IsArray, IsUrl, IsOptional } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePostDto {
-  // @IsNotEmpty()
-  // @IsString()
+  @ApiProperty({
+    description: '작성자 유저 ID',
+    example: 'user-uuid-123',
+  })
+  @IsNotEmpty()
+  @IsString()
   user_id: string;
 
-  // @IsOptional()
-  // @IsString()
-  value?: string; // 텍스트 내용 (선택)
+  @ApiProperty({
+    description: '게시글 텍스트 내용',
+    example: '이 밈 너무 웃겨요 ㅋㅋ',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  value?: string;
 
-  // @IsNotEmpty()
-  // @IsUrl()
-  image_url: string; // 이미지
+  @ApiProperty({
+    description: '이미지 URL',
+    example: 'https://example.com/meme.jpg',
+  })
+  @IsNotEmpty()
+  @IsUrl()
+  image_url: string;
 
-  // @IsArray()
-  // @IsString({ each: true })
-  hashtags: string[]; // ["#고양이", "#밈"]
+  @ApiProperty({
+    description: '해시태그 배열',
+    example: ['#고양이', '#밈'],
+    type: [String],
+  })
+  @IsArray()
+  @IsString({ each: true })
+  hashtags: string[];
 }

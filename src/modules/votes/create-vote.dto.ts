@@ -1,15 +1,28 @@
 import { IsNotEmpty, IsString, IsBoolean } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateVoteDto {
-  // @IsNotEmpty()
-  // @IsString()
+  @ApiProperty({
+    description: '게시글 ID',
+    example: 'post-uuid-123',
+  })
+  @IsNotEmpty()
+  @IsString()
   post_id: string;
 
-  // @IsNotEmpty()
-  // @IsString()
+  @ApiProperty({
+    description: '투표자 유저 ID',
+    example: 'user-uuid-456',
+  })
+  @IsNotEmpty()
+  @IsString()
   user_id: string;
 
-  // @IsNotEmpty()
-  // @IsBoolean()
-  is_funny: boolean; // true: 재미있음, false: 재미없음
+  @ApiProperty({
+    description: '재밌음 여부 (true: 재밌음, false: 안재밌음)',
+    example: true,
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  is_funny: boolean;
 }

@@ -34,7 +34,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 3000;
   await app.listen(port);
 
-  const baseUrl = process.env.BASE_URL || `http://localhost:${port}`;
+  const baseUrl = process.env.SERVER_URL || `http://localhost:${port}`;
   console.log(`
 🚀 Server is running on: ${baseUrl}
 📚 Swagger API Docs: ${baseUrl}/api

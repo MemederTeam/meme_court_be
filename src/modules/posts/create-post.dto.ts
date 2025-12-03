@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString, IsArray, IsUrl, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreatePostDto {
   @ApiProperty({
@@ -20,17 +21,24 @@ export class CreatePostDto {
   value?: string;
 
   @ApiProperty({
-    description: '이미지 URL',
-    example: 'https://example.com/meme.jpg',
-  })
-  @IsNotEmpty()
-  @IsUrl()
-  image_url: string;
-
-  @ApiProperty({
     description: '해시태그 배열',
     example: ['#고양이', '#밈'],
     type: [String],
+  })
+  @Transform(({ value }): string[] => {
+    // JSON 문자열 → 배열 변환
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value) as unknown;
+        if (Array.isArray(parsed)) {
+          return parsed as string[]; // 🔥 명시적 타입 단언
+        }
+        return [String(parsed)]; // 🔥 단일 값은 문자열 변환 후 배열
+      } catch {
+        return [value];
+      }
+    }
+    return Array.isArray(value) ? value : [value];
   })
   @IsArray()
   @IsString({ each: true })

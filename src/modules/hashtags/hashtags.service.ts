@@ -5,6 +5,7 @@ import { Hashtag } from '../../entities/hashtag.entity';
 import { PostHashtag } from '../../entities/post-hashtag.entity';
 import { Post } from '../../entities/post.entity';
 import { Vote } from '../../entities/vote.entity';
+import { hash } from 'crypto';
 
 @Injectable()
 export class HashtagsService {
@@ -76,7 +77,7 @@ export class HashtagsService {
 
     const postHashtags = await this.postHashtagRepository.find({
       where: { hashtag_id: hashtagId },
-      relations: ['post', 'post.user'],
+      relations: ['post', 'post.user', 'post.votes', 'post.postHashtags', 'post.postHashtags.hashtag'],
       order: { post: { created_at: 'DESC' } }, //최신순 정렬.
     });
 
@@ -92,6 +93,11 @@ export class HashtagsService {
         profile_image_url: ph.post.user.profile_image_url,
         user_profile_url: ph.post.user.profile_url,
       },
+      vote_count: {
+          funny: ph.post.votes.filter((v) => v.is_funny).length,
+          not_funny: ph.post.votes.filter((v) => !v.is_funny).length,
+          total: ph.post.votes.length,
+        },
     }));
   }
 }

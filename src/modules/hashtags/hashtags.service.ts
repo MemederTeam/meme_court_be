@@ -83,10 +83,10 @@ export class HashtagsService {
 
     return postHashtags.filter(ph=>!votedPostIds.includes(ph.post.id)).map((ph) => ({
       id: ph.post.id,
-      value: ph.post.value,
+      content: ph.post.value,
       image_url: ph.post.image_url,
       created_at: ph.post.created_at,
-      user: {
+      author: {
         id: ph.post.user.id,
         user_name: ph.post.user.user_name,
         display_name: ph.post.user.display_name,

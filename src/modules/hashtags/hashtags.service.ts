@@ -63,11 +63,29 @@ export class HashtagsService {
     return trendingWithImages;
   }
 
-  // 특정 해시태그의 게시글 목록
-  async getPostsByHashtag(hashtagId: string, userId?: string) {
+  // 특정 해시태그의 게시글 목록 (id 또는 name으로 조회)
+  async getPostsByHashtag(hashtagIdOrName: string, userId?: string) {
+    // UUID 형식인지 확인 (name으로 조회할지 id로 조회할지 결정)
+    const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(hashtagIdOrName);
+
+    let hashtagId = hashtagIdOrName;
+
+    // name으로 조회하는 경우 먼저 hashtag를 찾아서 id 획득
+    if (!isUUID) {
+      const hashtag = await this.hashtagRepository.findOne({
+        where: { name: hashtagIdOrName },
+      });
+      if (!hashtag) {
+        return []; // 해시태그가 없으면 빈 배열 반환
+      }
+      hashtagId = hashtag.id;
+    }
+
     //user가 이미 투표한 post id들
     let votedPostIds: string[] = [];
-    if (userId) {
+    // userId가 UUID 형식인 경우에만 투표 필터링
+    const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(userId || '');
+    if (userId && isValidUUID) {
       const votes = await this.voteRepository.find({
         where: { user_id: userId },
         select: ['post_id'],
